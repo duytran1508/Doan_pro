@@ -10,11 +10,6 @@ const createUser = async (req, res) => {
                 status: 'ERR',
                 message: 'the input is required'
             })
-        }else if(!isCheckEmail){
-            return res.status(200).json({
-                status: 'ERR',
-                message: 'the input is email'
-            })
         }else if(password !== confirmPassword) {
             return res.status(200).json({
                 status: 'ERR',
@@ -37,16 +32,6 @@ const loginUser = async (req, res) => {
             return res.status(200).json({
                 status: 'ERR',
                 message: 'the input is required'
-            })
-        }else if(!isCheckEmail){
-            return res.status(200).json({
-                status: 'ERR',
-                message: 'the input is email'
-            })
-        }else if(password !== confirmPassword) {
-            return res.status(200).json({
-                status: 'ERR',
-                message: 'the password is equal confirmPassword '
             })
         }
        const response = await UserService.loginUser(req.body)
