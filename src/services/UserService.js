@@ -1,185 +1,128 @@
-// const { status } = require('express/lib/response')
+const UserService = require("../services/UserService");
 
-const User = require('../models/UserModel')
-const bcrypt = require("bcrypt")
-
-
-const createUser = (newUser) =>{
-    return new Promise(async (resolve, reject) => {
-        const {name, email, password, confirmPassword, phone} = newUser
-
-        try {
-            const checkUser = await User.findOne({
-                email: email
-            })
-            if (checkUser != null){
-                resolve({
-                    status: 'Oke',
-                    message: 'Email is already'
-                })
-            }
-            const hash = bcrypt.hashSync(password, 10)
-            console.log('hash', hash)
-            const createdUser = await User.create({
-                name, 
-                email, 
-                password: hash,  
-                phone
-            })
-            if(createdUser){
-
-                resolve({
-                    status: 'Oke',
-                    massage: 'Success',
-                    data: createdUser
-                })
-            }
-        }catch(e){
-            reject(e)
+const createUser = async (req, res) => {
+  try {
+    const { name, email, password, confirmPassword, phone } = req.body;
+    if (!name || !email || !password || !confirmPassword || !phone) {
+      return res.status(200).json({
+        status: "ERR",
+        message: "the input is required"
+      });
+    } else if (password !== confirmPassword) {
+      return res.status(200).json({
+        status: "ERR",
+        message: "the password is equal confirmPassword "
+      });
+    }
+    const response = await UserService.createUser(req.body);
+    return res.status(200).json(response);
+  } catch (e) {
+    return res.status(404).json({
+      message: e
+    });
+  }
+};
+const loginUser = async (req, res) => {
+    try {
+        const { email, password } = req.body;
+        if (!email || !password) {
+            return res.status(400).json({
+                status: 'ERR',
+                message: 'The input is required',
+            });
         }
-    })
-}
 
-const loginUser = (userLogin) =>{
-    return new Promise(async (resolve, reject) => {
-        const {name, email, password, confirmPassword, phone} = userLogin
+        const response = await UserService.loginUser(req.body);
 
-        try {
-            const checkUser = await User.findOne({
-                email: email
-            })
-            if (checkUser === null){
-                resolve({
-                    status: 'Oke',
-                    message: 'User is not defined'
-                })
-            }
-            const comparePassword = bcrypt.compareSync(password, checkUser.password)
-            
-            if(!comparePassword){
-                resolve({
-                    status: 'Oke',
-                    message: 'User or password incorrect'
-                })
-            }
-
-                resolve({
-                    status: 'Oke',
-                    massage: 'Success',
-
-                })
-        
-        }catch(e){
-            reject(e)
+        if (response.status === 'ERR') {
+            return res.status(400).json({
+                status: 'ERR',
+                message: response.message, 
+            });
         }
-    })
-}
 
-const updateUser = (id, data) =>{
-    return new Promise(async (resolve, reject) => {
-        try {
-            const checkUser = await User.findOne({
-                _id : id
-            })
-                if (checkUser === null){
-                    resolve({
-                        status: 'Oke',
-                        message: 'User is not defined'
-                    })
-                }
-                
-                const updatedUser = await User.findByIdAndUpdate(id, data, { new : true})
+        return res.status(200).json(response);
+    } catch (e) {
+        return res.status(404).json({
+            message: e.message || 'An error',
+        });
+    }
+};
 
-                resolve({
-                    status: 'Oke',
-                    massage: 'Success',
-                    data: updatedUser
-                   
-                })
-        
-        }catch(e){
-            reject(e)
-        }
-    })
-}
-    
-const deleteUser = (id) =>{
-    return new Promise(async (resolve, reject) => {
-        try {
-            const checkUser = await User.findOne({
-                _id : id
-            })
-                if (checkUser === null){
-                    resolve({
-                        status: 'Oke',
-                        message: 'User is not defined'
-                    })
-                }
-                
-                await User.findByIdAndDelete(id)
-                resolve({
-                    status: 'Oke',
-                    massage: 'delete success'
-                   
-                })
-        
-        }catch(e){
-            reject(e)
-        }
-    })
-}
+const updateUser = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const data = req.body;
 
-const getAllUser = () =>{
-    return new Promise(async (resolve, reject) => {
-        try {
-               const allUser = await User.find()
-                resolve({
-                    status: 'Oke',
-                    massage: 'success',
-                    data: allUser
-                   
-                })
-        
-        }catch(e){
-            reject(e)
-        }
-    })
-}
+    if (!userId) {
+      return res.status(200).json({
+        status: "ERR",
+        message: "the userId is required "
+      });
+    }
+    console.log("userId", userId);
+    const response = await UserService.updateUser(userId, data);
+    return res.status(200).json(response);
+  } catch (e) {
+    return res.status(404).json({
+      message: e
+    });
+  }
+};
 
-const getDetailsUser = (id) =>{
-    return new Promise(async (resolve, reject) => {
-        try {
-            const user = await User.findOne({
-                _id : id
-            })
-                if (user === null){
-                    resolve({
-                        status: 'Oke',
-                        message: 'User is not defined'
-                    })
-                }
-                
-                resolve({
-                    status: 'Oke',
-                    massage: 'success',
-                    data: user
-                   
-                })
-        
-        }catch(e){
-            reject(e)
-        }
-    })
-}
+const deleteUser = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    if (!userId) {
+      return res.status(200).json({
+        status: "ERR",
+        message: "the userId is required "
+      });
+    }
+    console.log("userId", userId);
+    const response = await UserService.deleteUser(userId);
+    return res.status(200).json(response);
+  } catch (e) {
+    return res.status(404).json({
+      message: e
+    });
+  }
+};
 
+const getAllUser = async (req, res) => {
+  try {
+    const response = await UserService.getAllUser();
+    return res.status(200).json(response);
+  } catch (e) {
+    return res.status(404).json({
+      message: e
+    });
+  }
+};
+
+const getDetailsUser = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    if (!userId) {
+      return res.status(200).json({
+        status: "ERR",
+        message: "the userId is required "
+      });
+    }
+    const response = await UserService.getDetailsUser(userId);
+    return res.status(200).json(response);
+  } catch (e) {
+    return res.status(404).json({
+      message: e
+    });
+  }
+};
 
 module.exports = {
-    createUser,
-    loginUser,
-    updateUser,
-    deleteUser, 
-    getAllUser,
-    getDetailsUser
-}
-
-
+createUser,
+  loginUser,
+  updateUser,
+  deleteUser,
+  getAllUser,
+  getDetailsUser
+};
