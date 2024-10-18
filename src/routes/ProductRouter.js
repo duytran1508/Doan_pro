@@ -7,6 +7,7 @@ router.put('/update/:id', productController.updateProduct)
 router.get('/get-details/:id', productController.getDetailsProduct)
 router.delete('/delete-product/:id', productController.deleteProduct)
 router.get('/getAllProduct', productController.getAllProduct)
+router.delete('/delete-many/:id', productController.deleteManyProduct)
 
 
 
