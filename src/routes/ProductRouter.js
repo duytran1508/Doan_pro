@@ -12,4 +12,4 @@ router.delete('/delete-many/:id', productController.deleteManyProduct)
 
 
 
-module.exports = router
+module.exports = router 

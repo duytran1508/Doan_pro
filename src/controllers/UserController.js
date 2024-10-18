@@ -160,4 +160,4 @@ module.exports = {
     deleteManyUser,
     getAllUser,
     getDetailsUser
-};
+}; 

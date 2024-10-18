@@ -38,4 +38,4 @@ const oderSchema = new mongoose.Schema ({
     }
 );
 const Order = mongoose.model('Order', oderSchema);
-module.exports = Order
+module.exports = Order 
