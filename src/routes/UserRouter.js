@@ -11,11 +11,3 @@ router.delete('/delete-user/:id', userController.deleteUser)
 router.delete('/delete-many', userController.deleteManyUser)
 router.get('/getAllUser', userController.getAllUser)
 router.get('/get-details/:id',userController.getDetailsUser)
-
-
-<<<<<<< HEAD
-module.exports = router 
-=======
-
-module.exports = router
->>>>>>> be5b6fc24d9f7f156f470dd6855b48c0287a2a3b
