@@ -8,4 +8,4 @@ const routes = (app) => {
     app.use('/api/product', ProductRouter)
     
 }
-module.exports = routes 
+module.exports = routes
